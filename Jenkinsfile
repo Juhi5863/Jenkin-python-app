@@ -11,6 +11,7 @@ pipeline {
                 sh '''
                 python3 -m venv venv
                 source venv/bin/activate
+                pip install --upgrade pip
                 pip install -r requirements.txt
                 '''
             }
@@ -19,7 +20,7 @@ pipeline {
             steps {
                 sh '''
                 source venv/bin/activate
-                pytest
+                pytest test_app.py --disable-warnings
                 '''
             }
         }
@@ -27,7 +28,9 @@ pipeline {
             steps {
                 sh '''
                 mkdir -p build
-                cp -r app/* build/
+                cp app.py build/
+                cp requirements.txt build/
+                cp setup.py build/
                 tar -czf build.tar.gz build
                 '''
                 archiveArtifacts artifacts: 'build.tar.gz', fingerprint: true
